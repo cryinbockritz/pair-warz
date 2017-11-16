@@ -17,11 +17,13 @@ body {
 }
 
 .region-one {
-  background: cadetblue;
+  background: #222;
+  border-right: 2px solid #eee;
 }
 
 .region-two {
-  background: indianred;
+  background: #222;
+  border-left: 2px solid #eee;
 }
 
 .text-display {
@@ -46,6 +48,12 @@ body {
   33% { transform: rotate(5deg); }
   66% { transform: rotate(-5deg); }
   100% { transform: rotate(5deg); }
+}
+
+@keyframes rainbow-jitter {
+  0% { transform: rotate(-5deg); color: hsl(0, 100%, 60%); }
+  50% { transform: rotate(-5deg); color: hsl(180, 100%, 60%); }
+  100% { transform: rotate(5deg); color: hsl(360, 100%, 60%); }
 }
 
 @keyframes jitter-fade-out {

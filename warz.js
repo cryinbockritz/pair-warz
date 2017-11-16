@@ -9,6 +9,9 @@ const winThreshold = 300;
 let countdown = 3;
 let playerOneScore = 0;
 let playerTwoScore = 0;
+let streak = 0;
+let currentAnimationOne = 'none';
+let currentAnimationTwo = 'none';
 
 const reset = () => {
   regionOne.removeEventListener('mousemove', handleMouseMoveOne);
@@ -30,8 +33,19 @@ const reset = () => {
 const handleMouseMoveOne = () => {
   playerOneScore += 1;
   regionOneText.innerHTML = playerOneScore;
-  regionOneText.style.animation = 'jitter .1s linear infinite';
+  
+  streak = (streak < 0) ? --streak : -1;
+  regionOneText.style.color = `hsl(${Math.floor((streak/120)*180)}, 100%, 60%)`;
+  
+  if ((streak < -60) && (currentAnimationOne === 'jitter')) {
+    currentAnimationOne = 'rainbow-jitter';
+    regionOneText.style.animation = 'rainbow-jitter .1s linear infinite reverse';
+  } else if (currentAnimationOne !== 'jitter') {
+    regionOneText.style.animation = 'jitter .1s linear infinite';
+  }
+
   regionTwoText.style.animation = '';
+  currentAnimationTwo = '';
   requestAnimationFrame(() => {
     if (playerOneScore === winThreshold) {
       requestAnimationFrame(() => {
@@ -45,8 +59,15 @@ const handleMouseMoveOne = () => {
 const handleMouseMoveTwo = () => {
   playerTwoScore += 1;
   regionTwoText.innerHTML = playerTwoScore;
-  regionTwoText.style.animation = 'jitter .1s linear infinite';
+  streak = (streak > 0) ? ++streak : 1;
+  if (streak > 60) {
+    regionTwoText.style.animation = 'rainbow-jitter .1s linear infinite reverse';
+  } else {
+    regionTwoText.style.color = `hsl(${Math.floor((streak/60)*360)}, 100%, 60%)`;
+    regionTwoText.style.animation = 'jitter .1s linear infinite';
+  }
   regionOneText.style.animation = '';
+  currentAnimationOne = 'none';
   requestAnimationFrame(() => {
     if (playerTwoScore === winThreshold) {
       requestAnimationFrame(() => {
