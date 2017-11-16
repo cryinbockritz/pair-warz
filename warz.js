@@ -1,9 +1,12 @@
 const regionOne = document.querySelector('.region-one');
 const regionTwo = document.querySelector('.region-two');
+const regionOneText = document.querySelector('.region-one-text');
+const regionTwoText = document.querySelector('.region-two-text');
 const container = document.querySelector('.container');
+const textDisplay = document.querySelector('.text-display');
 
-const winThreshold = 202;
-
+const winThreshold = 300;
+let countdown = 3;
 let playerOneScore = 0;
 let playerTwoScore = 0;
 
@@ -12,46 +15,80 @@ const reset = () => {
   regionTwo.removeEventListener('mousemove', handleMouseMoveTwo);
   playerOneScore = 0;
   playerTwoScore = 0;
-  setTimeout(() => {
-    regionOne.innerHTML = 'Click To Start';
-    regionTwo.innerHTML = '';
+  countdown = 3;
+  textDisplay.style.animation = '';
+  regionOneText.style.animation = '';
+  regionTwoText.style.animation = '';
+  requestAnimationFrame(() => {
+    textDisplay.innerHTML = 'Click To Start';
+    regionOneText.innerHTML = '';
+    regionTwoText.innerHTML = '';
     setupGameStartListener();
-  }, 100);
+  });
 }
 
 const handleMouseMoveOne = () => {
   playerOneScore += 1;
-  if (playerOneScore === winThreshold) {
-    if (window.confirm('Player One Wins!')) {
-      reset();
+  regionOneText.innerHTML = playerOneScore;
+  regionOneText.style.animation = 'jitter .1s linear infinite';
+  regionTwoText.style.animation = '';
+  requestAnimationFrame(() => {
+    if (playerOneScore === winThreshold) {
+      requestAnimationFrame(() => {
+        window.alert('Player One Wins!');
+        reset();
+      });
     }
-  }
-  regionOne.innerHTML = playerOneScore;
-  regionTwo.innerHTML = playerTwoScore;
+  });
 };
 
 const handleMouseMoveTwo = () => {
   playerTwoScore += 1;
-  if (playerTwoScore === winThreshold) {
-    if(window.confirm('Player Two Wins!')) {
-      reset();
+  regionTwoText.innerHTML = playerTwoScore;
+  regionTwoText.style.animation = 'jitter .1s linear infinite';
+  regionOneText.style.animation = '';
+  requestAnimationFrame(() => {
+    if (playerTwoScore === winThreshold) {
+      requestAnimationFrame(() => {
+        window.alert('Player Two Wins!');
+        reset();
+      });
     }
-  }
-  regionOne.innerHTML = playerOneScore;
-  regionTwo.innerHTML = playerTwoScore;
+  });
 };
+
+const handleAnimationEnd = () => {
+  if (countdown === 0) {
+    textDisplay.removeEventListener('animationend', handleAnimationEnd);
+    textDisplay.innerHTML = '';
+    regionOneText.innerHTML = '0';
+    regionTwoText.innerHTML = '0';
+    regionOne.addEventListener('mousemove', handleMouseMoveOne);
+    regionTwo.addEventListener('mousemove', handleMouseMoveTwo);
+    return;
+  }
+  requestAnimationFrame(() => {
+    textDisplay.innerHTML = countdown--;
+    textDisplay.style.animation = '';
+    requestAnimationFrame(() => {
+      textDisplay.style.animation = 'fade-out 1s ease-in 1';
+    });
+  });
+}
+
+const beginCountdown = () => {
+  textDisplay.style.animation = 'jitter-fade-out .5s linear 1';
+  textDisplay.addEventListener('animationend', handleAnimationEnd);
+}
 
 const startGame = () => {
   document.body.removeEventListener('click', startGame);
-
-  regionOne.addEventListener('mousemove', handleMouseMoveOne);
-
-  regionTwo.addEventListener('mousemove', handleMouseMoveTwo);
-}
+  beginCountdown();
+};
 
 const setupGameStartListener = () => {
   document.body.addEventListener('click', startGame);
-}
+};
 
 setupGameStartListener();
 
